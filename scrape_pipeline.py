@@ -58,8 +58,8 @@ for r in results:
     filepath = output_dir / filename
 
     frontmatter = f"""---
-url: {r['url']}
-title: {r['title']}
+url: "{r['url']}"
+title: "{r['title']}"
 scraped_at: {today}
 ---
 
