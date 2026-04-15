@@ -45,3 +45,25 @@ for r in results:
     print(f"  - {r['title']}")
     print(f"    {r['url']}")
     print(f"    markdown length: {len(r.get('markdown') or '')} chars")
+
+# --- Step 02: Save results to knowledge/raw/ ---
+
+today = str(datetime.date.today())
+output_dir = Path("knowledge/raw")
+output_dir.mkdir(parents=True, exist_ok=True)
+
+for r in results:
+    slug = url_to_slug(r["url"])
+    filename = f"{today}_{slug}.md"
+    filepath = output_dir / filename
+
+    frontmatter = f"""---
+url: {r['url']}
+title: {r['title']}
+scraped_at: {today}
+---
+
+"""
+    content = frontmatter + (r.get("markdown") or "")
+    filepath.write_text(content, encoding="utf-8")
+    print(f"  Saved: {filepath}")
