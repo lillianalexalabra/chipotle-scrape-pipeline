@@ -66,4 +66,4 @@ scraped_at: {today}
 """
     content = frontmatter + (r.get("markdown") or "")
     filepath.write_text(content, encoding="utf-8")
-    print(f"  Saved: {filepath}")
+    print(f"Saved: knowledge/raw/{filename}")
