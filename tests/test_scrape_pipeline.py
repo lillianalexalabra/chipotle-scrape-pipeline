@@ -24,6 +24,6 @@ def test_import_does_not_make_network_calls(monkeypatch):
     import scrape_pipeline as sp
 
     called = []
-    monkeypatch.setattr("requests.post", lambda *a, **kw: called.append(True))
+    monkeypatch.setattr("scrape_pipeline.requests.post", lambda *a, **kw: called.append(True))
     importlib.reload(sp)
     assert called == [], "importing scrape_pipeline should not make a network call"
