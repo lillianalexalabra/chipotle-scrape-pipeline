@@ -18,3 +18,12 @@ def test_nested_path():
 
 def test_uppercase_normalized():
     assert url_to_slug("https://Ir.Chipotle.COM/News") == "ir.chipotle.com_news"
+
+def test_import_does_not_make_network_calls(monkeypatch):
+    import importlib
+    import scrape_pipeline as sp
+
+    called = []
+    monkeypatch.setattr("requests.post", lambda *a, **kw: called.append(True))
+    importlib.reload(sp)
+    assert called == [], "importing scrape_pipeline should not make a network call"

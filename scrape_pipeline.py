@@ -17,53 +17,54 @@ def url_to_slug(url: str) -> str:
     return slug
 
 
-load_dotenv()
+if __name__ == "__main__":
+    load_dotenv()
 
-api_key = os.getenv("FIRECRAWL_API_KEY")
+    api_key = os.getenv("FIRECRAWL_API_KEY")
 
-# --- Step 01: Search + scrape with Firecrawl ---
+    # --- Step 01: Search + scrape with Firecrawl ---
 
-api_url = "https://api.firecrawl.dev/v2/search"
+    api_url = "https://api.firecrawl.dev/v2/search"
 
-headers = {
-    "Authorization": f"Bearer {api_key}"
-}
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
 
-payload = {
-    "query": "Chipotle investor relations press releases",
-    "limit": 5,
-    "scrapeOptions": {"formats": ["markdown"]}
-}
+    payload = {
+        "query": "Chipotle investor relations press releases",
+        "limit": 5,
+        "scrapeOptions": {"formats": ["markdown"]}
+    }
 
-response = requests.post(api_url, headers=headers, json=payload)
+    response = requests.post(api_url, headers=headers, json=payload)
 
-data = response.json() # convert response to JSON
-results = data["data"]["web"] #get the results from the response
-print(f"Firecrawl returned {len(results)} results")
+    data = response.json()
+    results = data["data"]["web"]
+    print(f"Firecrawl returned {len(results)} results")
 
-for r in results:
-    print(f"  - {r['title']}")
-    print(f"    {r['url']}")
-    print(f"    markdown length: {len(r.get('markdown') or '')} chars")
+    for r in results:
+        print(f"  - {r['title']}")
+        print(f"    {r['url']}")
+        print(f"    markdown length: {len(r.get('markdown') or '')} chars")
 
-# --- Step 02: Save results to knowledge/raw/ ---
+    # --- Step 02: Save results to knowledge/raw/ ---
 
-today = str(datetime.date.today())
-output_dir = Path("knowledge/raw")
-output_dir.mkdir(parents=True, exist_ok=True)
+    today = str(datetime.date.today())
+    output_dir = Path("knowledge/raw")
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-for r in results:
-    slug = url_to_slug(r["url"])
-    filename = f"{today}_{slug}.md"
-    filepath = output_dir / filename
+    for r in results:
+        slug = url_to_slug(r["url"])
+        filename = f"{today}_{slug}.md"
+        filepath = output_dir / filename
 
-    frontmatter = f"""---
+        frontmatter = f"""---
 url: "{r['url']}"
 title: "{r['title']}"
 scraped_at: {today}
 ---
 
 """
-    content = frontmatter + (r.get("markdown") or "")
-    filepath.write_text(content, encoding="utf-8")
-    print(f"Saved: knowledge/raw/{filename}")
+        content = frontmatter + (r.get("markdown") or "")
+        filepath.write_text(content, encoding="utf-8")
+        print(f"Saved: knowledge/raw/{filename}")
